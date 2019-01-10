@@ -46,6 +46,7 @@ func (c *UserInfo) View(id int) (UserInfo,error){
 	fm, _ := DB.NewFieldsMap(table, c)
 	items := fm.View(id)
 
+	/*这段将 改变对象的值*/
 	elem := reflect.ValueOf(c).Elem()
 	reftype := elem.Type()
 

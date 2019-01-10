@@ -48,6 +48,9 @@ func (obj *_FieldsMap) View(id int)  ( interface{}) {
 	_sql := strings.Join([]string{"SELECT ",obj.SQLFieldsStr()," FROM ",obj.table," where id = ? "}, "")
 
 	row := con.QueryRow(_sql,id)
+	/*
+		生成了一个新的对象
+	*/
 	nobj := reflect.New(obj.reftype).Interface()
 	fieldsMap,err:= newFieldsMap(obj.table, nobj)
 	if err != nil {
@@ -61,8 +64,22 @@ func (obj *_FieldsMap) View(id int)  ( interface{}) {
 	}
 
 	fieldsMap.MapBackToObject()
+
 	return nobj
 
+}
+
+func (obj *_FieldsMap) ViewToSource(id int)  {
+	con := obj.db
+	_sql := strings.Join([]string{"SELECT ",obj.SQLFieldsStr()," FROM ",obj.table," where id = ? "}, "")
+
+	row := con.QueryRow(_sql,id)
+	err := row.Scan(obj.GetFieldSaveAddrs()...)
+	//var name string
+	if err != nil {
+		log.Fatal(err)
+	}
+	obj.MapBackToObject()
 }
 
 // 新增

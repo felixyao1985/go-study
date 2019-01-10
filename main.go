@@ -55,9 +55,21 @@ func main() {
 	fmt.Println("Remove",id)
 	println("#################################")
 
+	println("##################不用camera View###############")
+
+	fmt.Println("当前 item ID值",newRow0.ID)
+	fm, _ := camera.DB.NewFieldsMap("user", &newRow0)
+	fm.ViewToSource(66)
+	fmt.Println("不用camera View items ID:",newRow0.ID)
+
+
+
+
 	router := httprouter.New()
 	router.GET("/", Index)
 	router.GET("/hello/:name", Hello)
+
+
 
 	//log.Fatal(http.ListenAndServe(":8080", router))
 
