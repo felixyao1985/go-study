@@ -1,8 +1,11 @@
 package mysql
 
 import (
+	"bytes"
 	"database/sql"
+	"encoding/gob"
 	"fmt"
+	"log"
 	"reflect"
 	_ "restfulApi/lib/mysql"
 	"strings"
@@ -253,4 +256,77 @@ func (fds *_FieldsMap) MapBackToObject() interface{} {
 	}
 
 	return fds.dataobj
+}
+
+
+/*尝试处理数组*/
+func deepCopy(dst, src interface{}) error {
+	var buf bytes.Buffer
+	if err := gob.NewEncoder(&buf).Encode(src); err != nil {
+		return err
+	}
+	return gob.NewDecoder(bytes.NewBuffer(buf.Bytes())).Decode(dst)
+}
+
+
+func (c *DB) BrowseToSource(table string,sql string, dataobj interface{}){
+
+	/*
+		reflect中,最重要的是Value类,只有先获取到一个对象或者变量的Value对象后,我们才可以对这个对象或者变量进行更进一步的分析和处理。
+		reflect.ValueOf()方法获取Value对象。
+		获取变量的值使用value.Interface()方法，该方法会返回一个value的值，不过类型是interface。
+
+		对指针获取反射对象时，可以通过 reflect.Elem() 方法获取这个指针指向的元素类型。
+		这个获取过程被称为取元素，等效于对指针类型变量做了一个*操作
+	*/
+	elem := reflect.Indirect(reflect.ValueOf(dataobj))
+	reftype := elem.Type()
+
+	//获取元素对象的值
+	fmt.Println("NewListFieldsMap elem:",elem)
+	//获取元素对象的类型
+	fmt.Println("NewListFieldsMap reftype:",reftype)
+
+	elemobj := reflect.Indirect(reflect.New(reftype.Elem().Elem())).Addr()
+
+	//获取元素对象的元素类型
+	fmt.Println("NewListFieldsMap reftype.Elem():",reftype.Elem())
+	//在挖一层
+	fmt.Println("NewListFieldsMap reftype.Elem().Elem():",reftype.Elem().Elem())
+
+
+	//nobj := reflect.New(reftype).Interface()
+	obj,_:=newFieldsMap(table, elemobj.Interface())
+	fmt.Println("BrowseToSource fieldsMap:",obj)
+	con := c.con
+	_sql := strings.Join([]string{"SELECT ",obj.SQLFieldsStr()," FROM ",obj.table,sql}, "")
+
+	rows, err := con.Query(_sql)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for rows.Next() {
+		nobj := reflect.Indirect(reflect.New(reftype.Elem().Elem())).Addr()
+		//nobj := reflect.New(obj.reftype).Interface()
+		fieldsMap,err:=newFieldsMap(obj.table, nobj.Interface())
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = rows.Scan(fieldsMap.GetFieldSaveAddrs()...)
+		//var name string
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fieldsMap.MapBackToObject()
+		elem = reflect.Append(elem, nobj)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+	deepCopy(dataobj, elem.Interface())
+	fmt.Println("BrowseToSource fieldsMap elem:",elem)
 }

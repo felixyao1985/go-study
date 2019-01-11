@@ -69,18 +69,7 @@ func (obj *_FieldsMap) View(id int)  ( interface{}) {
 
 }
 
-func (obj *_FieldsMap) ViewToSource(id int)  {
-	con := obj.db
-	_sql := strings.Join([]string{"SELECT ",obj.SQLFieldsStr()," FROM ",obj.table," where id = ? "}, "")
 
-	row := con.QueryRow(_sql,id)
-	err := row.Scan(obj.GetFieldSaveAddrs()...)
-	//var name string
-	if err != nil {
-		log.Fatal(err)
-	}
-	obj.MapBackToObject()
-}
 
 // 新增
 func (obj *_FieldsMap) Insert()(int64 ,error)  {
@@ -210,3 +199,56 @@ func (obj *_FieldsMap) Remove()(int64 ,error)  {
 	//获得上一个插入自增的id
 	return res.RowsAffected()
 }
+
+
+/*无返回操作*/
+func (obj *_FieldsMap) ViewToSource(id int)  {
+	con := obj.db
+	_sql := strings.Join([]string{"SELECT ",obj.SQLFieldsStr()," FROM ",obj.table," where id = ? "}, "")
+
+	row := con.QueryRow(_sql,id)
+	err := row.Scan(obj.GetFieldSaveAddrs()...)
+	//var name string
+	if err != nil {
+		log.Fatal(err)
+	}
+	obj.MapBackToObject()
+}
+/*
+暂且一放。稍后收拾
+研究构造方法返回
+*/
+//func (obj *_FieldsMap) BrowseToSource(sql string)  {
+//	println("BrowseToSource : ",obj.fields)
+//	con := obj.db
+//	_sql := strings.Join([]string{"SELECT ",obj.SQLFieldsStr()," FROM ",obj.table,sql}, "")
+//
+//	rows, err := con.Query(_sql)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//	var objs []interface{}
+//	fmt.Println(obj.reftype)
+//	for rows.Next() {
+//		nobj := reflect.New(obj.reftype).Interface()
+//		fieldsMap,err:=newFieldsMap(obj.table, nobj)
+//		if err != nil {
+//			log.Fatal(err)
+//		}
+//		//是个坑。
+//		//在rows.Scan 的时候 同事也要接受他的err数据，否则代码虽然不会报错，但是下条数据中为null的字段会继承上一条数据
+//		err = rows.Scan(fieldsMap.GetFieldSaveAddrs()...)
+//		//var name string
+//		if err != nil {
+//			log.Fatal(err)
+//		}
+//
+//		fieldsMap.MapBackToObject()
+//		objs = append(objs, nobj)
+//	}
+//
+//	if err := rows.Err(); err != nil {
+//		log.Fatal(err)
+//	}
+//
+//}
