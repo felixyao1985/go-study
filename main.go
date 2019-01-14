@@ -30,6 +30,8 @@ func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		不支持循环类型的数据，因为这会导致Marshal死循环
 		指针会被转义为其所指向的值
 	*/
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(newRow0); err != nil {
 		panic(err)
 	}
@@ -52,7 +54,7 @@ func main() {
 	List ,_:= newRow0.BrowseAll("")
 
 	fmt.Println("列表:",List[0].Name)
-	println("#################################")
+	println("#################不会改变对象的值################")
 	data ,_:= newRow0.View(55)
 	fmt.Println("View data 55 Name",data.Name)
 	fmt.Println("View data newRow0 55 Name",newRow0.Name)
@@ -76,9 +78,8 @@ func main() {
 	}
 	id ,_:= newRow1.Remove()
 	fmt.Println("Remove",id)
-	println("#################################")
 
-	println("##################不用camera View###############")
+	println("##################不用camera View 且会改变对象的值###############")
 
 	fmt.Println("当前 item ID值",newRow0.ID)
 	fm, _ := camera.DB.NewFieldsMap("user", &newRow0)

@@ -1,7 +1,6 @@
 package camera
 
 import (
-	"reflect"
 	"strconv"
 	"strings"
 )
@@ -47,32 +46,32 @@ func (c *UserInfo) View(id int) (UserInfo,error){
 	items := fm.View(id)
 
 	/*这段将 改变对象的值*/
-	elem := reflect.ValueOf(c).Elem()
-	reftype := elem.Type()
-
-	elem2 := reflect.ValueOf(items).Elem()
-
-	for i, flen := 0, reftype.NumField(); i < flen; i++ {
-		Addr :=elem.Field(i).Addr().Interface()
-		Fieldtype := elem.Field(i).Type().String()
-
-		switch Fieldtype{
-		case "int64":
-			*Addr.(*int64) = elem2.Field(i).Int()
-			break
-		case "string":
-			*Addr.(*string) = elem2.Field(i).String()
-			break
-		case "float64":
-			*Addr.(*float64) = elem2.Field(i).Float()
-			break
-		case "bool":
-			*Addr.(*bool) = elem2.Field(i).Bool()
-			break
-		default:
-		}
-
-	}
+	//elem := reflect.ValueOf(c).Elem()
+	//reftype := elem.Type()
+	//
+	//elem2 := reflect.ValueOf(items).Elem()
+	//
+	//for i, flen := 0, reftype.NumField(); i < flen; i++ {
+	//	Addr :=elem.Field(i).Addr().Interface()
+	//	Fieldtype := elem.Field(i).Type().String()
+	//
+	//	switch Fieldtype{
+	//	case "int64":
+	//		*Addr.(*int64) = elem2.Field(i).Int()
+	//		break
+	//	case "string":
+	//		*Addr.(*string) = elem2.Field(i).String()
+	//		break
+	//	case "float64":
+	//		*Addr.(*float64) = elem2.Field(i).Float()
+	//		break
+	//	case "bool":
+	//		*Addr.(*bool) = elem2.Field(i).Bool()
+	//		break
+	//	default:
+	//	}
+	//
+	//}
 
 	return *items.(*UserInfo), nil
 }
