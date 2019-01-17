@@ -1,0 +1,14 @@
+syntax = "proto3";
+package test;
+
+service Waiter {
+    rpc DoMD5 (Req) returns (Res) {}
+}
+
+message Req {
+    string Str = 1;
+}
+
+message Res {
+    string backStr = 1;
+}
