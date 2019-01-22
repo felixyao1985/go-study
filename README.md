@@ -4,7 +4,10 @@
     -camera 数据操作
     -lib    第三方库（可有可无），可以使用GOPATH设置，为了学习方便都放这里了
     -unit   一些自行封装的工具方法
-    -app    业务代码
+    -app    业务代码目录
+        - dir 各模块目录
+            - index.go 业务代码 
+            - route.go 路由控制，会自动编译生成routePath文件内的内容
     
 学习GO语言 尝试封装mysql 操作
 - 操作
@@ -84,6 +87,6 @@ httprouter + negroni 来实现 restful
 
 </pre></code>
 
-grpc
-    server.go
-    client.go
+#GO grpc
+  
+  #### https://github.com/felixyao1985/go-study/blob/master/grpc.md 

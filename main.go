@@ -11,7 +11,7 @@ import (
 func main() {
 
 	newRow0 := camera.UserInfo{
-		ID: 1,
+		ID: 10,
 		Name: "felix_old",
 		Username: "felix_go_test",
 	}
