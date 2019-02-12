@@ -86,7 +86,17 @@ httprouter + negroni 来实现 restful
     n.Run(":3000")  
 
 </pre></code>
+#GO 部署
+
+app.log # 用来记录的日志文件
+log.sh # 实时查看日志
+build.sh # 构建
+run.sh # 启动某一次编译版本
+start.sh # 启动最新版本，并且备份之前前一次运行的版本
+shutdown.sh # 停止
+rollback.sh # 回滚到上一版本
 
 #GO grpc
   
   #### https://github.com/felixyao1985/go-study/blob/master/grpc.md 
+ 

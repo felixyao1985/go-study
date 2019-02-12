@@ -1,10 +1,10 @@
 
 package app
 
-import ("restfulApi/app/home"
-"restfulApi/app/index"
+import ("../app/home"
+"../app/index"
 
-	"restfulApi/router"
+	"../router"
 )
 
 

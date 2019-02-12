@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+//go语言里面struct里面变量如果大写则是public,如果是小写则是private的，private的时候通过反射不能获取其值
 type UserInfo struct {
 	ID int64  `sql:"id" key:"PRIMARY"`
 	Name string  `sql:"name"`
