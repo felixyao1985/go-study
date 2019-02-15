@@ -4,6 +4,10 @@
     -camera 数据操作
     -lib    第三方库（可有可无），可以使用GOPATH设置，为了学习方便都放这里了
     -unit   一些自行封装的工具方法
+    -build  一些辅助生成代码的工具
+    -proto  grpc proto文件
+    -grpc   grpc 客户端 和服务器端 案例
+    -router 路由struct 定义
     -app    业务代码目录
         - dir 各模块目录
             - index.go 业务代码 
