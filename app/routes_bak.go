@@ -1,8 +1,9 @@
 package app
+
 //
 //import (
-//	"restfulApi/app/index"
-//	"restfulApi/router"
+//	"go-study/app/index"
+//	"go-study/router"
 //)
 //
 //func merge(items  ...router.Routes) []router.Route{

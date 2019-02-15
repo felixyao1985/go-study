@@ -4,10 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"restfulApi/camera"
-	"restfulApi/lib/httprouter"
+	"go-study/camera"
+	"go-study/lib/httprouter"
 )
-
 
 func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	newRow0 := camera.UserInfo{}

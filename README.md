@@ -88,13 +88,21 @@ httprouter + negroni 来实现 restful
 </pre></code>
 #GO 部署
 
-app.log # 用来记录的日志文件
-log.sh # 实时查看日志
-build.sh # 构建
-run.sh # 启动某一次编译版本
-start.sh # 启动最新版本，并且备份之前前一次运行的版本
-shutdown.sh # 停止
-rollback.sh # 回滚到上一版本
+设置环境变量来切换编译环境
+"="前后不能有空格
+
+ - 1 设置环境变量 并打印显示，最后运行main.go
+
+   set GOBUILD=test&&set GOBUILD&&go run main.go （貌似编译后无法使用，因为通过set设置的环境变量只在当前窗口有效）
+
+ - 2 os.Args[1] 运行时带参数设置
+
+- log.sh # 实时查看日志
+- build.sh # 构建
+- run.sh # 启动某一次编译版本
+- start.sh # 启动最新版本，并且备份之前前一次运行的版本
+- shutdown.sh # 停止
+- rollback.sh # 回滚到上一版本
 
 #GO grpc
   

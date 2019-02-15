@@ -7,9 +7,9 @@ import (
 	"strings"
 )
 
-func (obj *_FieldsMap) Browse(sql string) ( []interface{}) {
+func (obj *_FieldsMap) Browse(sql string) []interface{} {
 	con := obj.db
-	_sql := strings.Join([]string{"SELECT ",obj.SQLFieldsStr()," FROM ",obj.table,sql}, "")
+	_sql := strings.Join([]string{"SELECT ", obj.SQLFieldsStr(), " FROM ", obj.table, sql}, "")
 
 	rows, err := con.Query(_sql)
 	if err != nil {
@@ -19,7 +19,7 @@ func (obj *_FieldsMap) Browse(sql string) ( []interface{}) {
 	fmt.Println(obj.reftype)
 	for rows.Next() {
 		nobj := reflect.New(obj.reftype).Interface()
-		fieldsMap,err:=newFieldsMap(obj.table, nobj)
+		fieldsMap, err := newFieldsMap(obj.table, nobj)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -43,16 +43,16 @@ func (obj *_FieldsMap) Browse(sql string) ( []interface{}) {
 
 }
 
-func (obj *_FieldsMap) View(id int)  ( interface{}) {
+func (obj *_FieldsMap) View(id int) interface{} {
 	con := obj.db
-	_sql := strings.Join([]string{"SELECT ",obj.SQLFieldsStr()," FROM ",obj.table," where id = ? "}, "")
+	_sql := strings.Join([]string{"SELECT ", obj.SQLFieldsStr(), " FROM ", obj.table, " where id = ? "}, "")
 
-	row := con.QueryRow(_sql,id)
+	row := con.QueryRow(_sql, id)
 	/*
 		生成了一个新的对象
 	*/
 	nobj := reflect.New(obj.reftype).Interface()
-	fieldsMap,err:= newFieldsMap(obj.table, nobj)
+	fieldsMap, err := newFieldsMap(obj.table, nobj)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,10 +69,8 @@ func (obj *_FieldsMap) View(id int)  ( interface{}) {
 
 }
 
-
-
 // 新增
-func (obj *_FieldsMap) Insert()(int64 ,error)  {
+func (obj *_FieldsMap) Insert() (int64, error) {
 	con := obj.db
 	var vs string
 	var tagsStr string
@@ -80,7 +78,7 @@ func (obj *_FieldsMap) Insert()(int64 ,error)  {
 	for i, flen := 0, len(obj.fields); i < flen; i++ {
 
 		//祛除主键
-		if(!obj.fields[i].Key) {
+		if !obj.fields[i].Key {
 			if len(vs) > 0 {
 				vs += ", "
 			}
@@ -105,10 +103,10 @@ func (obj *_FieldsMap) Insert()(int64 ,error)  {
 	sqlstr := "INSERT INTO `" + obj.table + "` (" + tagsStr + ") " +
 		"VALUES (" + vs + ")"
 	//fmt.Println(sqlstr)
-	tx,_ := con.Begin()
-	res, err := tx.Exec(sqlstr,values...)
-	if err != nil{
-		log.Fatal("Exec fail",err)
+	tx, _ := con.Begin()
+	res, err := tx.Exec(sqlstr, values...)
+	if err != nil {
+		log.Fatal("Exec fail", err)
 	}
 	//将事务提交
 	tx.Commit()
@@ -118,7 +116,7 @@ func (obj *_FieldsMap) Insert()(int64 ,error)  {
 }
 
 // 更新
-func (obj *_FieldsMap) Update()(int64 ,error)  {
+func (obj *_FieldsMap) Update() (int64, error) {
 	con := obj.db
 	var tagsStr string
 	var whereSql string
@@ -127,10 +125,10 @@ func (obj *_FieldsMap) Update()(int64 ,error)  {
 	for i, flen := 0, len(obj.fields); i < flen; i++ {
 
 		//祛除主键
-		if(obj.fields[i].Key) {
+		if obj.fields[i].Key {
 			keyVal = obj.GetFieldValue(i).(int64)
 			whereSql = " where `" + obj.fields[i].Tag + "` = ? "
-		}else {
+		} else {
 			if len(tagsStr) > 0 {
 				tagsStr += ", "
 			}
@@ -143,8 +141,8 @@ func (obj *_FieldsMap) Update()(int64 ,error)  {
 		}
 	}
 
-	if(keyVal ==0) {
-		return 0 , nil
+	if keyVal == 0 {
+		return 0, nil
 	}
 
 	values = append(values, keyVal)
@@ -156,10 +154,10 @@ func (obj *_FieldsMap) Update()(int64 ,error)  {
 
 	sqlstr := "UPDATE `" + obj.table + "` SET " + tagsStr + whereSql
 	//fmt.Println(sqlstr)
-	tx,_ := con.Begin()
-	res, err := tx.Exec(sqlstr,values...)
-	if err != nil{
-		log.Fatal("Exec fail",err)
+	tx, _ := con.Begin()
+	res, err := tx.Exec(sqlstr, values...)
+	if err != nil {
+		log.Fatal("Exec fail", err)
 	}
 	//将事务提交
 	tx.Commit()
@@ -169,28 +167,28 @@ func (obj *_FieldsMap) Update()(int64 ,error)  {
 }
 
 // 删除
-func (obj *_FieldsMap) Remove()(int64 ,error)  {
+func (obj *_FieldsMap) Remove() (int64, error) {
 	con := obj.db
 	var whereSql string
 	var keyVal int64 = 0
 	for i, flen := 0, len(obj.fields); i < flen; i++ {
 		//祛除主键
-		if(obj.fields[i].Key) {
+		if obj.fields[i].Key {
 			keyVal = obj.GetFieldValue(i).(int64)
 			whereSql = " where `" + obj.fields[i].Tag + "` = ? "
 		}
 	}
 
-	if(keyVal ==0) {
-		return 0 , nil
+	if keyVal == 0 {
+		return 0, nil
 	}
 
-	sqlstr := "DELETE FROM `" + obj.table + "`  "  + whereSql
+	sqlstr := "DELETE FROM `" + obj.table + "`  " + whereSql
 	//fmt.Println(sqlstr)
-	tx,_ := con.Begin()
-	res, err := tx.Exec(sqlstr,keyVal)
-	if err != nil{
-		log.Fatal("Exec fail",err)
+	tx, _ := con.Begin()
+	res, err := tx.Exec(sqlstr, keyVal)
+	if err != nil {
+		log.Fatal("Exec fail", err)
 	}
 
 	//将事务提交
@@ -200,13 +198,12 @@ func (obj *_FieldsMap) Remove()(int64 ,error)  {
 	return res.RowsAffected()
 }
 
-
 /*无返回操作*/
-func (obj *_FieldsMap) ViewToSource(id int)  {
+func (obj *_FieldsMap) ViewToSource(id int) {
 	con := obj.db
-	_sql := strings.Join([]string{"SELECT ",obj.SQLFieldsStr()," FROM ",obj.table," where id = ? "}, "")
+	_sql := strings.Join([]string{"SELECT ", obj.SQLFieldsStr(), " FROM ", obj.table, " where id = ? "}, "")
 
-	row := con.QueryRow(_sql,id)
+	row := con.QueryRow(_sql, id)
 	err := row.Scan(obj.GetFieldSaveAddrs()...)
 	//var name string
 	if err != nil {
@@ -214,6 +211,7 @@ func (obj *_FieldsMap) ViewToSource(id int)  {
 	}
 	obj.MapBackToObject()
 }
+
 /*
 暂且一放。稍后收拾
 研究构造方法返回

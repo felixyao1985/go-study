@@ -7,14 +7,14 @@ import (
 
 //go语言里面struct里面变量如果大写则是public,如果是小写则是private的，private的时候通过反射不能获取其值
 type UserInfo struct {
-	ID int64  `sql:"id" key:"PRIMARY"`
-	Name string  `sql:"name"`
-	Username string    `sql:"username"`
+	ID       int64  `sql:"id" key:"PRIMARY"`
+	Name     string `sql:"name"`
+	Username string `sql:"username"`
 }
 
-const table  string = "user"
+const table string = "user"
 
-func (c *UserInfo) List(items []interface{}) ([]UserInfo,error){
+func (c *UserInfo) List(items []interface{}) ([]UserInfo, error) {
 	var objs []UserInfo
 	for i, olen := 0, len(items); i < olen; i++ {
 		objs = append(objs, *items[i].(*UserInfo))
@@ -22,14 +22,14 @@ func (c *UserInfo) List(items []interface{}) ([]UserInfo,error){
 	return objs, nil
 }
 
-func (c *UserInfo) Browse(sql string,row int,start int) ([]UserInfo,error){
+func (c *UserInfo) Browse(sql string, row int, start int) ([]UserInfo, error) {
 
-	_sql := strings.Join([]string{sql," limt ",strconv.Itoa(start)," , ",strconv.Itoa(row)}, "")
-	objs , _:= c.BrowseAll(_sql)
+	_sql := strings.Join([]string{sql, " limt ", strconv.Itoa(start), " , ", strconv.Itoa(row)}, "")
+	objs, _ := c.BrowseAll(_sql)
 	return objs, nil
 }
 
-func (c *UserInfo) BrowseAll(sql string) ([]UserInfo,error){
+func (c *UserInfo) BrowseAll(sql string) ([]UserInfo, error) {
 
 	fm, _ := DB.NewFieldsMap(table, c)
 	items := fm.Browse(sql)
@@ -41,7 +41,7 @@ func (c *UserInfo) BrowseAll(sql string) ([]UserInfo,error){
 	return objs, nil
 }
 
-func (c *UserInfo) View(id int) (UserInfo,error){
+func (c *UserInfo) View(id int) (UserInfo, error) {
 
 	fm, _ := DB.NewFieldsMap(table, c)
 	items := fm.View(id)
@@ -77,17 +77,17 @@ func (c *UserInfo) View(id int) (UserInfo,error){
 	return *items.(*UserInfo), nil
 }
 
-func (c *UserInfo) Insert() (int64,error){
+func (c *UserInfo) Insert() (int64, error) {
 	fm, _ := DB.NewFieldsMap(table, c)
 	return fm.Insert()
 }
 
-func (c *UserInfo) Update() (int64,error){
+func (c *UserInfo) Update() (int64, error) {
 	fm, _ := DB.NewFieldsMap(table, c)
 	return fm.Update()
 }
 
-func (c *UserInfo) Remove() (int64,error){
+func (c *UserInfo) Remove() (int64, error) {
 	fm, _ := DB.NewFieldsMap(table, c)
 	return fm.Remove()
 }

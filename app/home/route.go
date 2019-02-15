@@ -1,7 +1,7 @@
 package home
 
 import (
-	"restfulApi/router"
+	"go-study/router"
 )
 
 var Routes = []router.Route{

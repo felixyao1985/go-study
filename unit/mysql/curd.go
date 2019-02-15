@@ -7,19 +7,17 @@ import (
 	"fmt"
 	"log"
 	"reflect"
-	_ "restfulApi/lib/mysql"
+	_ "go-study/lib/mysql"
 	"strings"
 )
 
-
-
 //注意方法名大写，就是public
-func initDB() *sql.DB{
+func initDB() *sql.DB {
 	//构建连接："用户名:密码@tcp(IP:端口)/数据库?charset=utf8"
-	path := strings.Join([]string{userName, ":", password, "@tcp(",ip, ":", port, ")/", dbName, "?charset=utf8"}, "")
+	path := strings.Join([]string{_SQL_Config.UserName, ":", _SQL_Config.Password, "@tcp(", _SQL_Config.IP, ":", _SQL_Config.PORT, ")/", _SQL_Config.DBName, "?charset=utf8"}, "")
 	//打开数据库,前者是驱动名，所以要导入： _ "github.com/go-sql-driver/mysql"
 	con, err := sql.Open("mysql", path)
-	if err != nil{
+	if err != nil {
 		checkErr(err)
 	}
 	//设置数据库最大连接数
@@ -27,7 +25,7 @@ func initDB() *sql.DB{
 	//设置上数据库最大闲置连接数
 	con.SetMaxIdleConns(10)
 	//验证连接
-	if err := con.Ping(); err != nil{
+	if err := con.Ping(); err != nil {
 		checkErr(err)
 	}
 	fmt.Println("connnect success")
@@ -35,7 +33,6 @@ func initDB() *sql.DB{
 	return con
 
 }
-
 
 func checkErr(err error) {
 	if err != nil {
@@ -53,6 +50,7 @@ func New() *DB {
 		con,
 	}
 }
+
 /*
 	字段对象
 
@@ -77,17 +75,18 @@ type field struct {
 }
 
 type _FieldsMap struct {
-	dataobj  interface{}
+	dataobj interface{}
 	reftype reflect.Type
 	fields  []field
 	table   string
-	db *sql.DB
+	db      *sql.DB
 }
+
 func (obj *_FieldsMap) GetFields() []field {
 	return obj.fields
 }
 
-func newFieldsMap(table string, dataobj interface{})(*_FieldsMap, error){
+func newFieldsMap(table string, dataobj interface{}) (*_FieldsMap, error) {
 
 	//reflect.Value.Elem() 表示获取原始值对应的反射对象，只有原始对象才能修改，当前反射对象是不能修改的
 	elem := reflect.ValueOf(dataobj).Elem()
@@ -114,17 +113,16 @@ func newFieldsMap(table string, dataobj interface{})(*_FieldsMap, error){
 		//获取对象name 的指针地址
 		field.Addr = elem.Field(i).Addr().Interface()
 
-		if(reftype.Field(i).Tag.Get("key") == "") {
+		if reftype.Field(i).Tag.Get("key") == "" {
 			field.Key = false
-		}else{
+		} else {
 			field.Key = true
 		}
 		fields = append(fields, field)
 	}
 
-
 	return &_FieldsMap{
-		dataobj:  dataobj,
+		dataobj: dataobj,
 		reftype: reftype,
 		fields:  fields,
 		table:   table,
@@ -132,9 +130,9 @@ func newFieldsMap(table string, dataobj interface{})(*_FieldsMap, error){
 }
 
 // NewFieldsMap 生成一个新的对象
-func (c *DB) NewFieldsMap(table string, dataobj interface{})(*_FieldsMap, error){
+func (c *DB) NewFieldsMap(table string, dataobj interface{}) (*_FieldsMap, error) {
 	//fmt.Println("dataobj",dataobj)
-	nfm, _ := newFieldsMap(table,dataobj)
+	nfm, _ := newFieldsMap(table, dataobj)
 	nfm.db = c.con
 	return nfm, nil
 }
@@ -258,7 +256,6 @@ func (fds *_FieldsMap) MapBackToObject() interface{} {
 	return fds.dataobj
 }
 
-
 /*尝试处理数组*/
 func deepCopy(dst, src interface{}) error {
 	var buf bytes.Buffer
@@ -268,8 +265,7 @@ func deepCopy(dst, src interface{}) error {
 	return gob.NewDecoder(bytes.NewBuffer(buf.Bytes())).Decode(dst)
 }
 
-
-func (c *DB) BrowseToSource(table string,sql string, dataobj interface{}){
+func (c *DB) BrowseToSource(table string, sql string, dataobj interface{}) {
 
 	/*
 		reflect中,最重要的是Value类,只有先获取到一个对象或者变量的Value对象后,我们才可以对这个对象或者变量进行更进一步的分析和处理。
@@ -283,23 +279,22 @@ func (c *DB) BrowseToSource(table string,sql string, dataobj interface{}){
 	reftype := elem.Type()
 
 	//获取元素对象的值
-	fmt.Println("NewListFieldsMap elem:",elem)
+	fmt.Println("NewListFieldsMap elem:", elem)
 	//获取元素对象的类型
-	fmt.Println("NewListFieldsMap reftype:",reftype)
+	fmt.Println("NewListFieldsMap reftype:", reftype)
 
 	elemobj := reflect.Indirect(reflect.New(reftype.Elem().Elem())).Addr()
 
 	//获取元素对象的元素类型
-	fmt.Println("NewListFieldsMap reftype.Elem():",reftype.Elem())
+	fmt.Println("NewListFieldsMap reftype.Elem():", reftype.Elem())
 	//在挖一层
-	fmt.Println("NewListFieldsMap reftype.Elem().Elem():",reftype.Elem().Elem())
-
+	fmt.Println("NewListFieldsMap reftype.Elem().Elem():", reftype.Elem().Elem())
 
 	//nobj := reflect.New(reftype).Interface()
-	obj,_:=newFieldsMap(table, elemobj.Interface())
-	fmt.Println("BrowseToSource fieldsMap:",obj)
+	obj, _ := newFieldsMap(table, elemobj.Interface())
+	fmt.Println("BrowseToSource fieldsMap:", obj)
 	con := c.con
-	_sql := strings.Join([]string{"SELECT ",obj.SQLFieldsStr()," FROM ",obj.table,sql}, "")
+	_sql := strings.Join([]string{"SELECT ", obj.SQLFieldsStr(), " FROM ", obj.table, sql}, "")
 
 	rows, err := con.Query(_sql)
 	if err != nil {
@@ -309,7 +304,7 @@ func (c *DB) BrowseToSource(table string,sql string, dataobj interface{}){
 	for rows.Next() {
 		nobj := reflect.Indirect(reflect.New(reftype.Elem().Elem())).Addr()
 		//nobj := reflect.New(obj.reftype).Interface()
-		fieldsMap,err:=newFieldsMap(obj.table, nobj.Interface())
+		fieldsMap, err := newFieldsMap(obj.table, nobj.Interface())
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -328,5 +323,5 @@ func (c *DB) BrowseToSource(table string,sql string, dataobj interface{}){
 		log.Fatal(err)
 	}
 	deepCopy(dataobj, elem.Interface())
-	fmt.Println("BrowseToSource fieldsMap elem:",elem)
+	fmt.Println("BrowseToSource fieldsMap elem:", elem)
 }

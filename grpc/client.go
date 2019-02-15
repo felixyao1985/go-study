@@ -1,12 +1,12 @@
 package main
-import (
-	"log"
-	"golang.org/x/net/context"
-	"os"
-	"google.golang.org/grpc"
-	"restfulApi/proto"
-)
 
+import (
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
+	"log"
+	"os"
+	"go-study/proto"
+)
 
 func main() {
 	// 建立连接到gRPC服务

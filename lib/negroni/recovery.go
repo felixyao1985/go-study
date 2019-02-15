@@ -164,7 +164,7 @@ func (rec *Recovery) ServeHTTP(rw http.ResponseWriter, r *http.Request, next htt
 			if rec.PrintStack {
 				infos.Stack = stack
 			}
-			
+
 			if rec.LogStack {
 				rec.Logger.Printf(panicText, err, stack)
 			}

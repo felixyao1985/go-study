@@ -1,10 +1,10 @@
 package router
 
-import "restfulApi/lib/httprouter"
+import "go-study/lib/httprouter"
 
 //import (
-//	"restfulApi/app"
-//	"restfulApi/lib/httprouter"
+//	"go-study/app"
+//	"go-study/lib/httprouter"
 //)
 //
 //func NewRouter() *httprouter.Router {
