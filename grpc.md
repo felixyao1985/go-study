@@ -51,6 +51,9 @@ win 安装流程
 
       // protoc --go_out=plugins=grpc:{输出目录}  {proto文件}
       protoc --go_out=plugins=grpc:./test/ ./test.proto
+      
+      //在shell下可以批量编译。但是在win cmd下会报错，无法识别通配符
+      protoc --go_out=plugins=grpc:. *.proto
     
 注意：原则上不要修改编译出来的*.bp.go文件的代码，因为双方接口基于同一个proto文件编译成自己的语言源码，此文件只作为接口数据处理，业务具体实现不在*.bp.go中。
     
