@@ -1,6 +1,6 @@
 package camera
 
-import "go-study/unit/mysql"
+import "study/go-study/unit/mysql"
 
 var DB = mysql.New()
 

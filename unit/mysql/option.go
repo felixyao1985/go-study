@@ -1,7 +1,6 @@
 package mysql
 
 import (
-	"fmt"
 	"log"
 	"reflect"
 	"strings"
@@ -16,7 +15,7 @@ func (obj *_FieldsMap) Browse(sql string) []interface{} {
 		log.Fatal(err)
 	}
 	var objs []interface{}
-	fmt.Println(obj.reftype)
+	//fmt.Println(obj.reftype)
 	for rows.Next() {
 		nobj := reflect.New(obj.reftype).Interface()
 		fieldsMap, err := newFieldsMap(obj.table, nobj)

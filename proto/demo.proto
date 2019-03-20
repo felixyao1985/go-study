@@ -12,7 +12,7 @@ syntax = "proto3";
   // 定义 Req 消息结构
   message Req2 {
     // 类型 字段 = 标识号
-    string Str = 1;
+    string Str = 1 ;
   }
 
   // 定义 Res 消息结构

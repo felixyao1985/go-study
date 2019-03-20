@@ -1,18 +1,34 @@
 package main
 
 import (
-	"../unit/mysql"
 	"database/sql"
 	"fmt"
+	_ "github.com/mysql"
 	"io/ioutil"
 	"log"
 	"os"
 	"strings"
 )
 
+type SQL_Config struct {
+	UserName string
+	Password string
+	IP       string
+	PORT     string
+	DBName   string
+}
+
 func initDB() *sql.DB {
 	//构建连接："用户名:密码@tcp(IP:端口)/数据库?charset=utf8"
-	path := strings.Join([]string{mysql.UserName, ":", mysql.Password, "@tcp(", mysql.IP, ":", mysql.PORT, ")/", "information_schema", "?charset=utf8"}, "")
+	_SQL_Config := SQL_Config{
+		UserName: "admin",
+		Password: "vsi666666",
+		IP:       "106.14.125.33",
+		PORT:     "4000",
+		DBName:   "information_schema",
+	}
+	fmt.Println(_SQL_Config)
+	path := strings.Join([]string{_SQL_Config.UserName, ":", _SQL_Config.Password, "@tcp(", _SQL_Config.IP, ":", _SQL_Config.PORT, ")/", "information_schema", "?charset=utf8"}, "")
 	//打开数据库,前者是驱动名，所以要导入： _ "github.com/go-sql-driver/mysql"
 	con, err := sql.Open("mysql", path)
 	if err != nil {

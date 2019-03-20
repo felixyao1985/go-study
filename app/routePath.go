@@ -3,7 +3,7 @@ package app
 import (
 	"fmt"
 	"io/ioutil"
-	"go-study/router"
+	"study/go-study/router"
 )
 
 func getDirList(dirpath string) ([]string, error) {

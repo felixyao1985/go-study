@@ -18,13 +18,13 @@ func GetProtoList(dirpath string) ([]string, error) {
 	var ret []string
 	dir_list, e := ioutil.ReadDir(dirpath)
 	if e != nil {
-		fmt.Println("read dir error",e)
+		fmt.Println("read dir error", e)
 	}
 	for _, v := range dir_list {
-		filenameWithSuffix := path.Base(v.Name()) //获取文件名带后缀
+		filenameWithSuffix := path.Base(v.Name())  //获取文件名带后缀
 		fileSuffix := path.Ext(filenameWithSuffix) //获取文件后缀
 
-		if fileSuffix == ".proto"{
+		if fileSuffix == ".proto" {
 			ret = append(ret, v.Name())
 		}
 	}
@@ -53,13 +53,11 @@ func writerProto() {
 	fmt.Println(List)
 
 	for _, name := range List {
-		command := "d: && cd d:/var/gowork/src/go-study/proto && protoc --go_out=plugins=grpc:. "+name
+		command := "d: && cd d:/var/gowork/src/go-study/proto && protoc --go_out=plugins=grpc:. " + name
 		params := []string{}
 		//执行cmd命令: ls -l
 		execCommandOnly(command, params)
 	}
-
-
 
 }
 func execCommandOnly(commandName string, params []string) bool {
@@ -68,12 +66,9 @@ func execCommandOnly(commandName string, params []string) bool {
 	//显示运行的命令
 	fmt.Println(cmd.Args)
 
-
-
 	fmt.Println(cmd.Start())
 	return true
 }
-
 
 func execCommand(commandName string, params []string) bool {
 	cmd := exec.Command(commandName, params...)

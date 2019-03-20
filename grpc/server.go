@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
-	"go-study/proto"
+	"study/go-study/proto"
 )
 
 // 业务实现方法的容器
@@ -24,6 +24,7 @@ func (s *server) DoMD5(ctx context.Context, in *test.Req) (*test.Res, error) {
 
 func main() {
 	lis, err := net.Listen("tcp", ":8028") //监听所有网卡8028端口的TCP连接
+
 	if err != nil {
 		log.Fatalf("监听失败: %v", err)
 	}
@@ -40,6 +41,7 @@ func main() {
 	 * minMovie.RegisterFbiServer(s, &server{})
 	 */
 	// 在gRPC服务器上注册反射服务
+
 	reflection.Register(s)
 	// 将监听交给gRPC服务处理
 	err = s.Serve(lis)

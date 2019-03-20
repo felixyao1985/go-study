@@ -5,9 +5,9 @@ import (
 	"database/sql"
 	"encoding/gob"
 	"fmt"
+	_ "github.com/mysql"
 	"log"
 	"reflect"
-	_ "go-study/lib/mysql"
 	"strings"
 )
 
@@ -279,20 +279,20 @@ func (c *DB) BrowseToSource(table string, sql string, dataobj interface{}) {
 	reftype := elem.Type()
 
 	//获取元素对象的值
-	fmt.Println("NewListFieldsMap elem:", elem)
+	//fmt.Println("NewListFieldsMap elem:", elem)
 	//获取元素对象的类型
-	fmt.Println("NewListFieldsMap reftype:", reftype)
+	//fmt.Println("NewListFieldsMap reftype:", reftype)
 
 	elemobj := reflect.Indirect(reflect.New(reftype.Elem().Elem())).Addr()
 
 	//获取元素对象的元素类型
-	fmt.Println("NewListFieldsMap reftype.Elem():", reftype.Elem())
+	//fmt.Println("NewListFieldsMap reftype.Elem():", reftype.Elem())
 	//在挖一层
-	fmt.Println("NewListFieldsMap reftype.Elem().Elem():", reftype.Elem().Elem())
+	//fmt.Println("NewListFieldsMap reftype.Elem().Elem():", reftype.Elem().Elem())
 
 	//nobj := reflect.New(reftype).Interface()
 	obj, _ := newFieldsMap(table, elemobj.Interface())
-	fmt.Println("BrowseToSource fieldsMap:", obj)
+	//fmt.Println("BrowseToSource fieldsMap:", obj)
 	con := c.con
 	_sql := strings.Join([]string{"SELECT ", obj.SQLFieldsStr(), " FROM ", obj.table, sql}, "")
 

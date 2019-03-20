@@ -1,14 +1,13 @@
 package main
 
 import (
-	"net/http"
-	"github.com/gorilla/websocket"
 	"errors"
 	"fmt"
+	"github.com/gorilla/websocket"
+	"net/http"
 	"sync"
 	"time"
 )
-
 
 // http升级websocket协议的配置
 var wsUpgrader = websocket.Upgrader{
@@ -21,21 +20,21 @@ var wsUpgrader = websocket.Upgrader{
 // 客户端读写消息
 type wsMessage struct {
 	messageType int
-	data []byte
+	data        []byte
 }
 
 // 客户端连接
 type wsConnection struct {
 	wsSocket *websocket.Conn // 底层websocket
-	inChan chan *wsMessage	// 读队列
-	outChan chan *wsMessage // 写队列
+	inChan   chan *wsMessage // 读队列
+	outChan  chan *wsMessage // 写队列
 
-	mutex sync.Mutex	// 避免重复关闭管道
-	isClosed bool
-	closeChan chan byte  // 关闭通知
+	mutex     sync.Mutex // 避免重复关闭管道
+	isClosed  bool
+	closeChan chan byte // 关闭通知
 }
 
-func (wsConn *wsConnection)wsReadLoop() {
+func (wsConn *wsConnection) wsReadLoop() {
 	for {
 		// 读一个message
 		msgType, data, err := wsConn.wsSocket.ReadMessage()
@@ -49,7 +48,7 @@ func (wsConn *wsConnection)wsReadLoop() {
 		// 放入请求队列
 		select {
 		case wsConn.inChan <- req:
-		case <- wsConn.closeChan:
+		case <-wsConn.closeChan:
 			goto closed
 		}
 	}
@@ -58,16 +57,16 @@ error:
 closed:
 }
 
-func (wsConn *wsConnection)wsWriteLoop() {
+func (wsConn *wsConnection) wsWriteLoop() {
 	for {
 		select {
 		// 取一个应答
-		case msg := <- wsConn.outChan:
+		case msg := <-wsConn.outChan:
 			// 写给websocket
 			if err := wsConn.wsSocket.WriteMessage(msg.messageType, msg.data); err != nil {
 				goto error
 			}
-		case <- wsConn.closeChan:
+		case <-wsConn.closeChan:
 			goto closed
 		}
 	}
@@ -76,7 +75,7 @@ error:
 closed:
 }
 
-func (wsConn *wsConnection)procLoop() {
+func (wsConn *wsConnection) procLoop() {
 	// 启动一个gouroutine发送心跳
 	go func() {
 		for {
@@ -112,11 +111,11 @@ func wsHandler(resp http.ResponseWriter, req *http.Request) {
 		return
 	}
 	wsConn := &wsConnection{
-		wsSocket: wsSocket,
-		inChan: make(chan *wsMessage, 1000),
-		outChan: make(chan *wsMessage, 1000),
+		wsSocket:  wsSocket,
+		inChan:    make(chan *wsMessage, 1000),
+		outChan:   make(chan *wsMessage, 1000),
 		closeChan: make(chan byte),
-		isClosed: false,
+		isClosed:  false,
 	}
 
 	// 处理器
@@ -127,25 +126,25 @@ func wsHandler(resp http.ResponseWriter, req *http.Request) {
 	go wsConn.wsWriteLoop()
 }
 
-func (wsConn *wsConnection)wsWrite(messageType int, data []byte) error {
+func (wsConn *wsConnection) wsWrite(messageType int, data []byte) error {
 	select {
-	case wsConn.outChan <- &wsMessage{messageType, data,}:
-	case <- wsConn.closeChan:
+	case wsConn.outChan <- &wsMessage{messageType, data}:
+	case <-wsConn.closeChan:
 		return errors.New("websocket closed")
 	}
 	return nil
 }
 
-func (wsConn *wsConnection)wsRead() (*wsMessage, error) {
+func (wsConn *wsConnection) wsRead() (*wsMessage, error) {
 	select {
-	case msg := <- wsConn.inChan:
+	case msg := <-wsConn.inChan:
 		return msg, nil
-	case <- wsConn.closeChan:
+	case <-wsConn.closeChan:
 	}
 	return nil, errors.New("websocket closed")
 }
 
-func (wsConn *wsConnection)wsClose() {
+func (wsConn *wsConnection) wsClose() {
 	wsConn.wsSocket.Close()
 
 	wsConn.mutex.Lock()

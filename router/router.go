@@ -1,6 +1,6 @@
 package router
 
-import "go-study/lib/httprouter"
+import "github.com/httprouter"
 
 //import (
 //	"go-study/app"

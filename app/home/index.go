@@ -3,9 +3,9 @@ package home
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/httprouter"
 	"net/http"
-	"go-study/camera"
-	"go-study/lib/httprouter"
+	"study/go-study/camera"
 )
 
 func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {

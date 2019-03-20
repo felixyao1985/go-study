@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"go-study/app"
-	"go-study/camera"
-	"go-study/lib/httprouter"
-	"go-study/lib/negroni"
+	"github.com/httprouter"
+	"github.com/negroni"
+	"study/go-study/app"
+	"study/go-study/camera"
 )
 
 func main() {
